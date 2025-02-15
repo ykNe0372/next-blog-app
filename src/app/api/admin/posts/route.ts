@@ -1,18 +1,24 @@
 import prisma from "@/lib/prisma";
 import { NextResponse, NextRequest } from "next/server";
 import { Post } from "@prisma/client";
+import { supabase } from "@/utils/supabase";
 
 type RequestBody = {
   title: string;
   content: string;
-  coverImageURL: string;
+  coverImageKey: string;
   categoryIds: string[];
 };
 
 export const POST = async (req: NextRequest) => {
+  const token = req.headers.get("Authorization") ?? "";
+  const { data, error } = await supabase.auth.getUser(token);
+  if (error)
+    return NextResponse.json({ error: error.message }, { status: 401 });
+
   try {
     const requestBody: RequestBody = await req.json();
-    const { title, content, coverImageURL, categoryIds } = requestBody;
+    const { title, content, coverImageKey, categoryIds } = requestBody;
     const categories = await prisma.category.findMany({
       where: {
         id: {
@@ -31,7 +37,7 @@ export const POST = async (req: NextRequest) => {
       data: {
         title,
         content,
-        coverImageURL,
+        coverImageKey,
       },
     });
 

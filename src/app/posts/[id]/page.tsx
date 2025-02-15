@@ -8,6 +8,7 @@ import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
 
 import DOMPurify from "isomorphic-dompurify";
+import { PostApiResponse } from "@/app/_types/PostApiResponse";
 
 // 投稿記事の詳細表示 /posts/[id]
 const Page: React.FC = () => {
@@ -18,26 +19,34 @@ const Page: React.FC = () => {
   // 動的ルートパラメータから id を取得 （URL:/posts/[id]）
   const { id } = useParams() as { id: string };
 
-  const apiBaseEp = process.env.NEXT_PUBLIC_MICROCMS_BASE_EP!;
-  const apiKey = process.env.NEXT_PUBLIC_MICROCMS_API_KEY!;
-
   useEffect(() => {
     const fetchPosts = async () => {
       setIsLoading(true);
       try {
-        const requestUrl = `${apiBaseEp}/posts/${id}`;
+        const requestUrl = `/api/posts/${id}`;
         const response = await fetch(requestUrl, {
           method: "GET",
           cache: "no-store",
-          headers: {
-            "X-MICROCMS-API-KEY": apiKey,
-          },
         });
         if (!response.ok) {
           throw new Error("データの取得に失敗しました");
         }
-        const data = await response.json();
-        setPost(data as Post);
+        const postApiResponse: PostApiResponse = await response.json();
+        setPost({
+          id: postApiResponse.id,
+          title: postApiResponse.title,
+          content: postApiResponse.content,
+          coverImage: {
+            url: postApiResponse.coverImageURL,
+            width: 1000,
+            height: 1000,
+          },
+          createdAt: postApiResponse.createdAt,
+          categories: postApiResponse.categories.map((category) => ({
+            id: category.category.id,
+            name: category.category.name,
+          })),
+        });
       } catch (e) {
         setFetchError(
           e instanceof Error ? e.message : "予期せぬエラーが発生しました"
@@ -47,7 +56,7 @@ const Page: React.FC = () => {
       }
     };
     fetchPosts();
-  }, [apiBaseEp, apiKey, id]);
+  }, [id]);
 
   if (fetchError) {
     return <div>{fetchError}</div>;

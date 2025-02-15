@@ -6,6 +6,7 @@ import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { twMerge } from "tailwind-merge";
 import { Category } from "@/app/_types/Category";
 import Link from "next/link";
+import { useAuth } from "@/app/_hooks/useAuth";
 
 // カテゴリをフェッチしたときのレスポンスのデータ型
 type RawApiCategoryResponse = {
@@ -20,7 +21,9 @@ const Page: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fetchErrorMsg, setFetchErrorMsg] = useState<string | null>(null);
+
   const router = useRouter();
+  const { token } = useAuth();
 
   // カテゴリ配列 (State)。取得中と取得失敗時は null、既存カテゴリが0個なら []
   const [categories, setCategories] = useState<Category[] | null>(null);
