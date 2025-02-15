@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { twMerge } from "tailwind-merge";
+import { useAuth } from "@/app/_hooks/useAuth";
 
 // カテゴリをフェッチしたときのレスポンスのデータ型
 type RawApiCategoryResponse = {
@@ -46,6 +47,7 @@ const Page: React.FC = () => {
   const [newCoverImageURL, setNewCoverImageURL] = useState("");
 
   const { id } = useParams() as { id: string };
+  const { token } = useAuth();
   const router = useRouter();
 
   // カテゴリ配列 (State)。取得中と取得失敗時は null、既存カテゴリが0個なら []
@@ -176,6 +178,10 @@ const Page: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // この処理をしないとページがリロードされるので注意
 
+    if (!token) {
+      window.alert("予期せぬ動作: トークンが取得できません。");
+      return;
+    }
     setIsSubmitting(true);
 
     // ▼▼ 追加 ウェブAPI (/api/admin/posts/[id]) にPUTリクエストを送信する処理
@@ -195,6 +201,7 @@ const Page: React.FC = () => {
         cache: "no-store",
         headers: {
           "Content-Type": "application/json",
+          Authorization: token,
         },
         body: JSON.stringify(requestBody),
       });

@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { NextResponse, NextRequest } from "next/server";
 import { Post } from "@prisma/client";
+import { supabase } from "@/utils/supabase";
 
 type RouteParams = {
   params: {
@@ -11,16 +12,20 @@ type RouteParams = {
 type RequestBody = {
   title: string;
   content: string;
-  coverImageURL: string;
+  coverImageKey: string;
   categoryIds: string[];
 };
 
 export const PUT = async (req: NextRequest, routeParams: RouteParams) => {
   try {
+    const token = req.headers.get("Authorization") ?? "";
+    const { data, error } = await supabase.auth.getUser(token);
+    if (error)
+      return NextResponse.json({ error: error.message }, { status: 401 });
     const id = routeParams.params.id;
     const requestBody: RequestBody = await req.json();
 
-    const { title, content, coverImageURL, categoryIds } = requestBody;
+    const { title, content, coverImageKey, categoryIds } = requestBody;
 
     const categories = await prisma.category.findMany({
       where: {
@@ -42,7 +47,7 @@ export const PUT = async (req: NextRequest, routeParams: RouteParams) => {
       data: {
         title,
         content,
-        coverImageURL,
+        coverImageKey,
       },
     });
 
@@ -67,6 +72,10 @@ export const PUT = async (req: NextRequest, routeParams: RouteParams) => {
 
 export const DELETE = async (req: NextRequest, routeParams: RouteParams) => {
   try {
+    const token = req.headers.get("Authorization") ?? "";
+    const { data, error } = await supabase.auth.getUser(token);
+    if (error)
+      return NextResponse.json({ error: error.message }, { status: 401 });
     const id = routeParams.params.id;
     const post: Post = await prisma.post.delete({
       where: { id },
