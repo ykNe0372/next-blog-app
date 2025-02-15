@@ -6,7 +6,7 @@ import { supabase } from "@/utils/supabase";
 type RequestBody = {
   title: string;
   content: string;
-  coverImageURL: string;
+  coverImageKey: string;
   categoryIds: string[];
 };
 
@@ -18,7 +18,7 @@ export const POST = async (req: NextRequest) => {
 
   try {
     const requestBody: RequestBody = await req.json();
-    const { title, content, coverImageURL, categoryIds } = requestBody;
+    const { title, content, coverImageKey, categoryIds } = requestBody;
     const categories = await prisma.category.findMany({
       where: {
         id: {
@@ -37,7 +37,7 @@ export const POST = async (req: NextRequest) => {
       data: {
         title,
         content,
-        coverImageURL,
+        coverImageKey,
       },
     });
 
