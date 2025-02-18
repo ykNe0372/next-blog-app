@@ -28,11 +28,7 @@ const Page: React.FC = () => {
             id: rawPost.id,
             title: rawPost.title,
             content: rawPost.content,
-            coverImage: {
-              url: rawPost.coverImageURL,
-              width: 1000,
-              height: 1000,
-            },
+            coverImageKey: rawPost.coverImageKey,
             createdAt: rawPost.createdAt,
             categories: rawPost.categories.map((category) => ({
               id: category.category.id,
