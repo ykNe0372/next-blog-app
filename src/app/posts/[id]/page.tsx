@@ -10,11 +10,16 @@ import Image from "next/image";
 import DOMPurify from "isomorphic-dompurify";
 import { PostApiResponse } from "@/app/_types/PostApiResponse";
 
+import { supabase } from "@/utils/supabase";
+
 // 投稿記事の詳細表示 /posts/[id]
 const Page: React.FC = () => {
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
+
+  const [coverImageUrl, setCoverImageUrl] = useState<string | undefined>();
+  const bucketName = "cover_image";
 
   // 動的ルートパラメータから id を取得 （URL:/posts/[id]）
   const { id } = useParams() as { id: string };
@@ -36,17 +41,20 @@ const Page: React.FC = () => {
           id: postApiResponse.id,
           title: postApiResponse.title,
           content: postApiResponse.content,
-          coverImage: {
-            url: postApiResponse.coverImageURL,
-            width: 1000,
-            height: 1000,
-          },
+          coverImageKey: postApiResponse.coverImageKey,
           createdAt: postApiResponse.createdAt,
           categories: postApiResponse.categories.map((category) => ({
             id: category.category.id,
             name: category.category.name,
           })),
         });
+        setCoverImageUrl(
+          postApiResponse.coverImageKey
+            ? supabase.storage
+                .from(bucketName)
+                .getPublicUrl(postApiResponse.coverImageKey).data.publicUrl
+            : ""
+        );
       } catch (e) {
         setFetchError(
           e instanceof Error ? e.message : "予期せぬエラーが発生しました"
@@ -88,12 +96,15 @@ const Page: React.FC = () => {
         <div className="mb-2 text-2xl font-bold">{post.title}</div>
         <div>
           <Image
-            src={post.coverImage.url}
+            src={
+              coverImageUrl ||
+              "https://via.placeholder.com/1024x768.png?text=No+Image"
+            }
             alt="Example Image"
-            width={post.coverImage.width}
-            height={post.coverImage.height}
             priority
             className="rounded-xl"
+            width={1024}
+            height={768}
           />
         </div>
         <div dangerouslySetInnerHTML={{ __html: safeHTML }} />

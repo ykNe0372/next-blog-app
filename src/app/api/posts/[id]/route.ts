@@ -31,7 +31,6 @@ export const GET = async (req: NextRequest, routeParams: RouteParams) => {
         },
       },
     });
-
     if (!post) {
       return NextResponse.json(
         { error: `id='${id}'の投稿記事は見つかりませんでした` },

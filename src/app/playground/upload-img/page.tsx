@@ -74,6 +74,7 @@ const Page: React.FC = () => {
       <div className="break-all text-sm">coverImageUrl : {coverImageUrl}</div>
       {coverImageUrl && (
         <div className="mt-2">
+          <div className="">{coverImageUrl}</div>
           <Image
             className="w-1/2 border-2 border-gray-300"
             src={coverImageUrl}
