@@ -72,10 +72,6 @@ export const PUT = async (req: NextRequest, routeParams: RouteParams) => {
 
 export const DELETE = async (req: NextRequest, routeParams: RouteParams) => {
   try {
-    const token = req.headers.get("Authorization") ?? "";
-    const { data, error } = await supabase.auth.getUser(token);
-    if (error)
-      return NextResponse.json({ error: error.message }, { status: 401 });
     const id = routeParams.params.id;
     const post: Post = await prisma.post.delete({
       where: { id },

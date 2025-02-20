@@ -178,13 +178,8 @@ const Page: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // この処理をしないとページがリロードされるので注意
 
-    if (!token) {
-      window.alert("予期せぬ動作: トークンが取得できません。");
-      return;
-    }
     setIsSubmitting(true);
 
-    // ▼▼ 追加 ウェブAPI (/api/admin/posts/[id]) にPUTリクエストを送信する処理
     try {
       const requestBody = {
         title: newTitle,
@@ -196,6 +191,12 @@ const Page: React.FC = () => {
       };
       const requestUrl = `/api/admin/posts/${id}`;
       console.log(`${requestUrl} => ${JSON.stringify(requestBody, null, 2)}`);
+
+      if (!token) {
+        window.alert("予期せぬ動作: トークンが取得できません。");
+        return;
+      }
+
       const res = await fetch(requestUrl, {
         method: "PUT",
         cache: "no-store",
@@ -217,6 +218,42 @@ const Page: React.FC = () => {
       const errorMsg =
         error instanceof Error
           ? `投稿記事のPOSTリクエストに失敗しました\n${error.message}`
+          : `予期せぬエラーが発生しました\n${error}`;
+      console.error(errorMsg);
+      window.alert(errorMsg);
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    // prettier-ignore
+    if (!window.confirm("本当に削除しますか？")) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const requestUrl = `/api/admin/posts/${id}`;
+
+      if (!token) {
+        window.alert("予期せぬ動作: トークンが取得できません。");
+        return;
+      }
+
+      const res = await fetch(requestUrl, {
+        method: "DELETE",
+        cache: "no-store",
+      });
+
+      if (!res.ok) {
+        throw new Error(`${res.status}: ${res.statusText}`);
+      }
+      // トップページに遷移
+      router.replace("/");
+    } catch (error) {
+      const errorMsg =
+        error instanceof Error
+          ? `投稿記事のDELETEリクエストに失敗しました\n${error.message}`
           : `予期せぬエラーが発生しました\n${error}`;
       console.error(errorMsg);
       window.alert(errorMsg);
@@ -289,22 +326,6 @@ const Page: React.FC = () => {
         </div>
 
         <div className="space-y-1">
-          <label htmlFor="coverImageURL" className="block font-bold">
-            カバーイメージ (URL)
-          </label>
-          <input
-            type="url"
-            id="coverImageURL"
-            name="coverImageURL"
-            className="w-full rounded-md border-2 px-2 py-1"
-            value={newCoverImageURL}
-            onChange={updateNewCoverImageURL}
-            placeholder="カバーイメージのURLを記入してください"
-            required
-          />
-        </div>
-
-        <div className="space-y-1">
           <div className="font-bold">タグ</div>
           <div className="flex flex-wrap gap-x-3.5">
             {checkableCategories!.length > 0 ? (
@@ -345,7 +366,7 @@ const Page: React.FC = () => {
               "rounded-md px-5 py-1 font-bold",
               "bg-red-500 text-white hover:bg-red-600"
             )}
-            // onClick={handleDelete}
+            onClick={handleDelete}
           >
             削除
           </button>
