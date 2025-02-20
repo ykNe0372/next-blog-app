@@ -6,6 +6,7 @@ import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { twMerge } from "tailwind-merge";
 import { Category } from "@/app/_types/Category";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "@/app/_hooks/useAuth";
 import Link from "next/link";
 
 // カテゴリをフェッチしたときのレスポンスのデータ型
@@ -31,6 +32,7 @@ const Page: React.FC = () => {
 
   // 動的ルートパラメータから id を取得 （URL:/admin/categories/[id]）
   const { id } = useParams() as { id: string };
+  const { token } = useAuth();
 
   // ページの移動に使用するフック
   const router = useRouter();
@@ -117,11 +119,18 @@ const Page: React.FC = () => {
 
     try {
       const requestUrl = `/api/admin/categories/${id}`;
+
+      if (!token) {
+        window.alert("予期せぬ動作：トークンが取得できません。");
+        return;
+      }
+
       const res = await fetch(requestUrl, {
         method: "PUT",
         cache: "no-store",
         headers: {
           "Content-Type": "application/json",
+          Authorization: token,
         },
         body: JSON.stringify({ name: newCategoryName }),
       });
@@ -154,6 +163,12 @@ const Page: React.FC = () => {
     setIsSubmitting(true);
     try {
       const requestUrl = `/api/admin/categories/${id}`;
+
+      if (!token) {
+        window.alert("予期せぬ動作：トークンが取得できません。");
+        return;
+      }
+
       const res = await fetch(requestUrl, {
         method: "DELETE",
         cache: "no-store",

@@ -291,12 +291,6 @@ const Page: React.FC = () => {
             >
               ファイルを選択
             </button>
-            <div className="break-all text-sm">
-              coverImageKey : {coverImageKey}
-            </div>
-            <div className="break-all text-sm">
-              coverImageUrl : {coverImageUrl}
-            </div>
             {coverImageUrl && (
               <div className="mt-2">
                 <Image
