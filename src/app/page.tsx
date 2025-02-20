@@ -5,12 +5,15 @@ import PostSummary from "@/app/_components/PostSummary";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { PostApiResponse } from "./_types/PostApiResponse";
+import { useAuth } from "./_hooks/useAuth";
 import Link from "next/link";
 import { twMerge } from "tailwind-merge";
 
 const Page: React.FC = () => {
   const [posts, setPosts] = useState<Post[] | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
+
+  const { session } = useAuth();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -99,9 +102,18 @@ const Page: React.FC = () => {
         </button>
       </div>
       <div className="mb-1 flex justify-end">
-        <Link href="/admin" className="text-blue-500 underline">
-          管理者機能
-        </Link>
+        {session ? (
+          <Link href="/admin">
+            <button
+              type="button"
+              className="mb-2 rounded-md bg-teal-400 px-3 py-1 text-white hover:bg-teal-500"
+            >
+              管理者ページへ
+            </button>
+          </Link>
+        ) : (
+          ""
+        )}
       </div>
       <div className="space-y-3">
         {posts.map((post) => (
