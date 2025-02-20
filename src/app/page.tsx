@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { PostApiResponse } from "./_types/PostApiResponse";
 import Link from "next/link";
+import { twMerge } from "tailwind-merge";
 
 const Page: React.FC = () => {
   const [posts, setPosts] = useState<Post[] | null>(null);
@@ -61,6 +62,42 @@ const Page: React.FC = () => {
   return (
     <main>
       <div className="mb-2 text-2xl font-bold">投稿記事一覧</div>
+      <div className="mt-4 flex items-center gap-x-2">
+        <label htmlFor="deadline" className="font-bold">
+          検索
+        </label>
+        <input
+          type="text"
+          placeholder="ブログ内を検索"
+          className="rounded-md border border-gray-400 px-2 py-0.5"
+        />
+        <button
+          type="button"
+          className={twMerge(
+            "my-2 rounded-md bg-blue-400 px-4 py-1 font-bold text-white hover:bg-blue-500"
+          )}
+        >
+          検索
+        </button>
+      </div>
+      <div className="mb-4 flex items-center gap-x-2">
+        <button
+          type="button"
+          className={twMerge(
+            "my-2 rounded-md border border-slate-700 bg-gray-100 px-4 py-1 font-bold text-slate-700 hover:bg-gray-300"
+          )}
+        >
+          タイトル名でソート
+        </button>
+        <button
+          type="button"
+          className={twMerge(
+            "my-2 rounded-md border border-slate-700 bg-gray-100 px-4 py-1 font-bold text-slate-700 hover:bg-gray-300"
+          )}
+        >
+          投稿日時でソート
+        </button>
+      </div>
       <div className="mb-1 flex justify-end">
         <Link href="/admin" className="text-blue-500 underline">
           管理者機能

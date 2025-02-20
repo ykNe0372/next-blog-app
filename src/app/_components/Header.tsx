@@ -2,7 +2,7 @@
 import { twMerge } from "tailwind-merge";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFish } from "@fortawesome/free-solid-svg-icons";
+import { faFeather } from "@fortawesome/free-solid-svg-icons";
 import { supabase } from "@/utils/supabase";
 import { useAuth } from "@/app/_hooks/useAuth";
 import { useRouter } from "next/navigation";
@@ -27,8 +27,8 @@ const Header: React.FC = () => {
         >
           <div>
             <Link href="/">
-              <FontAwesomeIcon icon={faFish} className="mr-1" />
-              ???&apos;s blog
+              <FontAwesomeIcon icon={faFeather} className="mr-1" />
+              BlogApp
             </Link>
           </div>
           <nav>
