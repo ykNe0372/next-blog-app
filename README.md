@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 概要
 
-## Getting Started
+本アプリは TypeScript、Next.js を用いたブログアプリです。
+記事の新規作成/編集/削除の基本的な機能を実装し、シンプルなデザインのアプリに仕上げました。
 
-First, run the development server:
+また、ログイン機能を実装し、ログインしたユーザーのみが記事の作成等を行えるようになっています。
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 使用技術
+
+- Next.js: 14
+- TypeScript: 5.6.3
+
+## 実行画面
+
+（写真貼る）
+
+## 工夫点
+
+<!-- - 見やすいようなデザインになるよう、こだわりました -->
+
+- 検索機能とソート機能を実装し、投稿記事の数が増えた場合でも、特定の記事が探しやすいようにしました。
+
+## 実装予定の機能
+
+- 検索機能
+- いいね機能、ブックマーク機能
+- 一目見ただけで伝わるようなデザイン
+
+## 動作方法
+
+#### リポジトリをクローンする
+
+ローカルにプロジェクトリポジトリをクローンします。
+
+```
+git clone https://github.com/ykNe0372/next-blog-app.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+#### パッケージのインストール
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`package.json`に記載されているパッケージを全てインストールします。
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+npm install
+```
 
-## Learn More
+#### データベースの作成
 
-To learn more about Next.js, take a look at the following resources:
+プロジェクト内で参照可能なメソッドや型情報などを生成します。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+npx prisma generate
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+#### テスト実行
 
-## Deploy on Vercel
+以下のコマンドを実行した後、ロードが終わらない場合は
+リロードをかけると動作します。
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+npm run dev
+```
