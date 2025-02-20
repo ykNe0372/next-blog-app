@@ -14,9 +14,11 @@ import { twMerge } from "tailwind-merge";
 
 const Page: React.FC = () => {
   const [posts, setPosts] = useState<Post[] | null>(null);
+  const [filteredPosts, setFilteredPosts] = useState<Post[] | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [sortByCreatedAt, setSortByCreatedAt] = useState<boolean>(false);
   const [isDescending, setIsDescending] = useState<boolean>(true); // ソート順を管理する状態変数
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const { session } = useAuth();
 
@@ -32,19 +34,19 @@ const Page: React.FC = () => {
           throw new Error("データの取得に失敗しました");
         }
         const postResponse: PostApiResponse[] = await response.json();
-        setPosts(
-          postResponse.map((rawPost) => ({
-            id: rawPost.id,
-            title: rawPost.title,
-            content: rawPost.content,
-            coverImageKey: rawPost.coverImageKey,
-            createdAt: rawPost.createdAt,
-            categories: rawPost.categories.map((category) => ({
-              id: category.category.id,
-              name: category.category.name,
-            })),
-          }))
-        );
+        const posts = postResponse.map((rawPost) => ({
+          id: rawPost.id,
+          title: rawPost.title,
+          content: rawPost.content,
+          coverImageKey: rawPost.coverImageKey,
+          createdAt: rawPost.createdAt,
+          categories: rawPost.categories.map((category) => ({
+            id: category.category.id,
+            name: category.category.name,
+          })),
+        }));
+        setPosts(posts);
+        setFilteredPosts(posts);
       } catch (e) {
         setFetchError(
           e instanceof Error ? e.message : "予期せぬエラーが発生しました"
@@ -55,23 +57,40 @@ const Page: React.FC = () => {
   }, []);
 
   const handleSortByCreatedAt = () => {
-    if (posts) {
-      const sortedPosts = [...posts].sort((a, b) => {
+    if (filteredPosts) {
+      const sortedPosts = [...filteredPosts].sort((a, b) => {
         const dateA = new Date(a.createdAt).getTime();
         const dateB = new Date(b.createdAt).getTime();
         return isDescending ? dateB - dateA : dateA - dateB;
       });
-      setPosts(sortedPosts);
+      setFilteredPosts(sortedPosts);
       setSortByCreatedAt(true);
       setIsDescending(!isDescending); // ソート順を切り替える
     }
+  };
+
+  const handleSearch = () => {
+    if (posts) {
+      const query = searchQuery.toLowerCase();
+      const filtered = posts.filter(
+        (post) =>
+          post.title.toLowerCase().includes(query) ||
+          post.content.toLowerCase().includes(query)
+      );
+      setFilteredPosts(filtered);
+    }
+  };
+
+  const handleReset = () => {
+    setFilteredPosts(posts);
+    setSearchQuery("");
   };
 
   if (fetchError) {
     return <div>{fetchError}</div>;
   }
 
-  if (!posts) {
+  if (!filteredPosts) {
     return (
       <div className="text-gray-500">
         <FontAwesomeIcon icon={faSpinner} className="mr-1 animate-spin" />
@@ -84,22 +103,37 @@ const Page: React.FC = () => {
     <main>
       <div className="mb-2 text-2xl font-bold">投稿記事一覧</div>
       <div className="mt-4 flex items-center gap-x-2">
-        <label htmlFor="deadline" className="font-bold">
+        <label htmlFor="search" className="font-bold">
           検索
         </label>
         <input
           type="text"
-          placeholder="ブログ内を検索"
+          id="search"
+          placeholder="記事を検索します"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           className="rounded-md border border-gray-400 px-2 py-0.5"
         />
         <button
           type="button"
+          onClick={handleSearch}
           className={twMerge(
             "my-2 rounded-md bg-blue-400 px-4 py-1 font-bold text-white hover:bg-blue-500"
           )}
         >
           検索
         </button>
+        {searchQuery && (
+          <button
+            type="button"
+            onClick={handleReset}
+            className={twMerge(
+              "my-2 rounded-md bg-red-400 px-4 py-1 font-bold text-white hover:bg-red-500"
+            )}
+          >
+            リセット
+          </button>
+        )}
       </div>
       <div className="mb-4 flex items-center gap-x-2">
         <button
@@ -131,7 +165,7 @@ const Page: React.FC = () => {
         )}
       </div>
       <div className="space-y-3">
-        {posts.map((post) => (
+        {filteredPosts.map((post) => (
           <PostSummary
             key={sortByCreatedAt ? post.createdAt : post.id}
             post={post}

@@ -3,6 +3,9 @@ import { twMerge } from "tailwind-merge";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFeather } from "@fortawesome/free-solid-svg-icons";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRightToBracket } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { supabase } from "@/utils/supabase";
 import { useAuth } from "@/app/_hooks/useAuth";
 import { useRouter } from "next/navigation";
@@ -36,13 +39,28 @@ const Header: React.FC = () => {
               <li>
                 {!isLoading &&
                   (session ? (
-                    <button onClick={logout}>Logout</button>
+                    <button onClick={logout}>
+                      Logout
+                      <FontAwesomeIcon
+                        icon={faArrowRightFromBracket}
+                        className="ml-1"
+                      />
+                    </button>
                   ) : (
-                    <Link href="/login">Login</Link>
+                    <Link href="/login">
+                      Login
+                      <FontAwesomeIcon
+                        icon={faArrowRightToBracket}
+                        className="ml-1"
+                      />
+                    </Link>
                   ))}
               </li>
               <li>
-                <Link href="/about">About</Link>
+                <Link href="/about">
+                  About
+                  <FontAwesomeIcon icon={faUser} className="ml-1" />
+                </Link>
               </li>
             </ul>
           </nav>
