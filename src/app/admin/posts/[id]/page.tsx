@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { twMerge } from "tailwind-merge";
 import { useAuth } from "@/app/_hooks/useAuth";
-import { markdownToHtml } from "@/app/_components/MarkdownToHtml"; // 追加
 
 // カテゴリをフェッチしたときのレスポンスのデータ型
 type RawApiCategoryResponse = {
@@ -45,7 +44,6 @@ const Page: React.FC = () => {
 
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
-  const [htmlContent, setHtmlContent] = useState(""); // 追加
   const [newCoverImageURL, setNewCoverImageURL] = useState("");
 
   const { id } = useParams() as { id: string };
@@ -133,7 +131,6 @@ const Page: React.FC = () => {
     // 投稿記事のタイトル、本文、カバーイメージURLを更新
     setNewTitle(rawApiPostResponse.title);
     setNewContent(rawApiPostResponse.content);
-    setHtmlContent(markdownToHtml(rawApiPostResponse.content)); // 追加
     setNewCoverImageURL(rawApiPostResponse.coverImageURL);
 
     // カテゴリの選択状態を更新
@@ -167,10 +164,11 @@ const Page: React.FC = () => {
     setNewTitle(e.target.value);
   };
 
-  const updateNewContent = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const updateNewContent = async (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     const markdown = e.target.value;
     setNewContent(markdown);
-    setHtmlContent(markdownToHtml(markdown)); // 追加
   };
 
   const updateNewCoverImageURL = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -326,17 +324,6 @@ const Page: React.FC = () => {
             onChange={updateNewContent}
             placeholder="本文を記入してください"
             required
-          />
-        </div>
-
-        <div className="space-y-1">
-          <label htmlFor="htmlContent" className="block font-bold">
-            プレビュー
-          </label>
-          <div
-            id="htmlContent"
-            className="h-48 w-full rounded-md border-2 px-2 py-1"
-            dangerouslySetInnerHTML={{ __html: htmlContent }} // 追加
           />
         </div>
 

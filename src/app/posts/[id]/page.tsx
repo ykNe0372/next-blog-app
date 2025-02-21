@@ -38,7 +38,7 @@ const Page: React.FC = () => {
           throw new Error("データの取得に失敗しました");
         }
         const postApiResponse: PostApiResponse = await response.json();
-        const htmlContent = markdownToHtml(postApiResponse.content); // マークダウンをHTMLに変換
+        const htmlContent = await markdownToHtml(postApiResponse.content); // マークダウンをHTMLに変換
         console.log(htmlContent);
         setPost({
           id: postApiResponse.id,

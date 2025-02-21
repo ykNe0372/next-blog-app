@@ -120,10 +120,13 @@ const Page: React.FC = () => {
     setNewTitle(e.target.value);
   };
 
-  const updateNewContent = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const updateNewContent = async (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     const markdown = e.target.value;
     setNewContent(markdown);
-    setHtmlContent(markdownToHtml(markdown)); // 追加
+    const html = await markdownToHtml(markdown);
+    setHtmlContent(html);
   };
 
   const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
