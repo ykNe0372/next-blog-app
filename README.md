@@ -12,7 +12,8 @@
 
 ## 実行画面
 
-（写真貼る）
+![画像１](/imgs/home.png)
+![画像２](/imgs/desktop.png)
 
 ## 工夫点
 
