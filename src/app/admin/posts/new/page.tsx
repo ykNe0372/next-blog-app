@@ -8,6 +8,7 @@ import { useAuth } from "@/app/_hooks/useAuth";
 import { supabase } from "@/utils/supabase";
 import CryptoJS from "crypto-js";
 import Image from "next/image";
+import { markdownToHtml } from "@/app/_components/MarkdownToHtml"; // 追加
 
 // カテゴリをフェッチしたときのレスポンスのデータ型
 type CategoryApiResponse = {
@@ -39,6 +40,7 @@ const Page: React.FC = () => {
 
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
+  const [htmlContent, setHtmlContent] = useState(""); // 追加
   const [newCoverImageURL, setNewCoverImageURL] = useState("");
 
   const router = useRouter();
@@ -118,9 +120,13 @@ const Page: React.FC = () => {
     setNewTitle(e.target.value);
   };
 
-  const updateNewContent = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    // ここに本文のバリデーション処理を追加する
-    setNewContent(e.target.value);
+  const updateNewContent = async (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    const markdown = e.target.value;
+    setNewContent(markdown);
+    const html = await markdownToHtml(markdown);
+    setHtmlContent(html);
   };
 
   const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -268,6 +274,17 @@ const Page: React.FC = () => {
             onChange={updateNewContent}
             placeholder="本文を記入してください"
             required
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label htmlFor="htmlContent" className="block font-bold">
+            プレビュー
+          </label>
+          <div
+            id="htmlContent"
+            className="h-48 w-full rounded-md border-2 px-2 py-1"
+            dangerouslySetInnerHTML={{ __html: htmlContent }} // 追加
           />
         </div>
 

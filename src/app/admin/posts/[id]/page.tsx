@@ -164,9 +164,11 @@ const Page: React.FC = () => {
     setNewTitle(e.target.value);
   };
 
-  const updateNewContent = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    // ここに本文のバリデーション処理を追加する
-    setNewContent(e.target.value);
+  const updateNewContent = async (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    const markdown = e.target.value;
+    setNewContent(markdown);
   };
 
   const updateNewCoverImageURL = (e: React.ChangeEvent<HTMLInputElement>) => {

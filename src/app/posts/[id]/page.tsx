@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation"; // ◀ 注目
+import { useParams } from "next/navigation";
 
 import type { Post } from "@/app/_types/Post";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,6 +11,7 @@ import DOMPurify from "isomorphic-dompurify";
 import { PostApiResponse } from "@/app/_types/PostApiResponse";
 
 import { supabase } from "@/utils/supabase";
+import { markdownToHtml } from "@/app/_components/MarkdownToHtml"; // インポート
 
 // 投稿記事の詳細表示 /posts/[id]
 const Page: React.FC = () => {
@@ -37,10 +38,12 @@ const Page: React.FC = () => {
           throw new Error("データの取得に失敗しました");
         }
         const postApiResponse: PostApiResponse = await response.json();
+        const htmlContent = await markdownToHtml(postApiResponse.content); // マークダウンをHTMLに変換
+        console.log(htmlContent);
         setPost({
           id: postApiResponse.id,
           title: postApiResponse.title,
-          content: postApiResponse.content,
+          content: htmlContent, // 変換されたHTMLをセット
           coverImageKey: postApiResponse.coverImageKey,
           createdAt: postApiResponse.createdAt,
           categories: postApiResponse.categories.map((category) => ({
@@ -87,7 +90,30 @@ const Page: React.FC = () => {
 
   // HTMLコンテンツのサニタイズ
   const safeHTML = DOMPurify.sanitize(post.content, {
-    ALLOWED_TAGS: ["b", "strong", "i", "em", "u", "br"],
+    ALLOWED_TAGS: [
+      "b",
+      "strong",
+      "i",
+      "em",
+      "u",
+      "br",
+      "p",
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "h5",
+      "h6",
+      "ul",
+      "ol",
+      "li",
+      "a",
+      "blockquote",
+      "code",
+      "pre",
+      "del",
+    ], // 必要なタグを追加
+    ALLOWED_ATTR: ["href", "target"], // 必要な属性を追加
   });
 
   return (
@@ -107,7 +133,10 @@ const Page: React.FC = () => {
             height={768}
           />
         </div>
-        <div dangerouslySetInnerHTML={{ __html: safeHTML }} />
+        <section
+          className="my-4"
+          dangerouslySetInnerHTML={{ __html: safeHTML }}
+        />
       </div>
     </main>
   );
